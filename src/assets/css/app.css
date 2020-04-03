@@ -1,0 +1,16 @@
+html {
+    background-color: var(--gray-dark);
+}
+
+body {
+    background-color: transparent;
+    overflow: scroll;
+}
+
+#mount {}
+
+
+
+.ui__player {
+    text-align: center;
+}

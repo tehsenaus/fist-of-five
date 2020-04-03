@@ -1,0 +1,48 @@
+{
+  "name": "ggj18",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx babel-node src/server/server.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tehsenaus/ggj18.git"
+  },
+  "author": "SKK",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tehsenaus/ggj18/issues"
+  },
+  "homepage": "https://github.com/tehsenaus/ggj18#readme",
+  "dependencies": {
+    "babel": "^6.23.0",
+    "babel-cli": "^6.26.0",
+    "babel-jest": "^22.1.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-lodash": "^3.3.2",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "express": "^4.16.2",
+    "fast-async": "^6.3.0",
+    "file-loader": "^0.11.2",
+    "html-loader": "^0.4.5",
+    "html-webpack-plugin": "^2.30.1",
+    "jest": "^22.1.4",
+    "lodash.get": "^4.4.2",
+    "lodash.values": "^4.3.0",
+    "preact": "^8.2.7",
+    "random-words": "0.0.1",
+    "redux-saga": "^0.16.0",
+    "regenerator-runtime": "^0.11.1",
+    "shuffle-array": "^1.0.1",
+    "webpack": "^3.10.0",
+    "webpack-dev-middleware": "^1.12.0",
+    "webpack-hot-middleware": "^2.19.1"
+  }
+}

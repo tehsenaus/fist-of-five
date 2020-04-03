@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0' name='viewport' />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"> 
+    <title>GGJ2018</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"/>
+<style>
+    /*
+    tb vars
+    --blue: #007bff;
+    --indigo: #6610f2;
+    --purple: #6f42c1;
+    --pink: #e83e8c;
+    --red: #dc3545;
+    --orange: #fd7e14;
+    --yellow: #ffc107;
+    --green: #28a745;
+    --teal: #20c997;
+    --cyan: #17a2b8;
+    --white: #fff;
+    --gray: #6c757d;
+    --gray-dark: #343a40;
+    --primary: #007bff;
+    --secondary: #6c757d;
+    --success: #28a745;
+    --info: #17a2b8;
+    --warning: #ffc107;
+    --danger: #dc3545;
+    --light: #f8f9fa;
+    --dark: #343a40;
+    --breakpoint-xs: 0;
+    --breakpoint-sm: 576px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 992px;
+    --breakpoint-xl: 1200px;
+    */
+/**
+ * Reassign variables to our theme
+ */
+:root {
+    --gray-dark: #2D2D37;
+    --primary: #02BF67;
+}
+html, body {
+    height: 100%;
+    font-family: Consolas, "Courier New", Courier, monospace;
+}
+
+html {
+    background-color: var(--gray-dark);
+}
+
+body {
+    background-color: transparent;
+    overflow: scroll;
+}
+body, pre {
+    color: var(--light);
+}
+
+/**
+ */
+.btn {
+    border-radius: 3px;
+    margin: 0.125em;
+}
+.btn:hover {
+    opacity: 0.6;
+}
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
+.badge {
+    background-color: var(--primary);
+}
+
+.o-flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+.o-flex--1 { flex: 1; }
+.o-flex--2 { flex: 2; }
+.o-flex--3 { flex: 3; }
+.o-flex--4 { flex: 4; }
+
+.m-b--xs { margin-bottom: 0.6vh; }
+.m-b--sm { margin-bottom: 3vh; }
+.m-b,
+.m-b--rg { margin-bottom: 4vh; }
+.m-b--md { margin-bottom: 6vh; }
+.m-b--lg { margin-bottom: 12vh; }
+
+/**
+ */
+
+#mount {}
+
+.text--screen-title {
+    font-family: "Andale Mono";
+    letter-spacing: 0.075em;
+}
+
+.ui__lobby {
+    text-align: center;
+    width: 100%;
+}
+
+.ui__player {
+    display: flex;
+    width: 100%;
+    flex: 1;
+    max-width: 600px;
+    margin: 0 auto;
+}
+.ui__player.phase-inputPasswords, .ui__player.phase-joinGame {
+    position: absolute;
+    top: 0;
+    height: 50vh;
+    align-items: default !important;
+}
+.ui__player.phase-inputPasswords .o-flex {
+    align-items: default !important;
+}
+.input__screen {
+    width: 100%;
+    padding: 12px;
+}
+.input__screen input {
+    width: 100%;
+    font-size: 2em;
+    border: 0;
+    outline: 0;
+    border-left: 2px solid var(--light);
+    background-color: rgba(255, 255, 255, 0.16);
+    color: var(--light);
+    padding: 3px 12px;
+    letter-spacing: 0.05em;
+}
+.input__screen input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 300;
+    font-style: italic;
+}
+.input__screen button {
+    width: 100%;
+    height: auto;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.ui__keypad {
+    position: fixed;
+    bottom: 10px;
+    top: 50%;
+    left: 0; right: 0;
+    padding: 10px;
+}
+.ui__keypad table {
+    width: 100%;
+}
+</style>    
+</head>
+<body>
+<div id="mount"></div>
+</body>
+</html>

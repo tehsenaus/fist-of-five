@@ -189,21 +189,22 @@ export default class PlayerUi extends Component {
                     ))}
                 </p>
 
-                {this.renderHostControls(game)}
-
                 <p>{game.players.length} voter(s) joined:</p>
 
                 {this.renderPlayers(game)}
                 
                 <br /><br />
                 <p>Shareable URL (expires in {this.state.game.countdownTimeSecs}): <pre>{window.location.href}</pre></p>
+                
+                {this.renderHostControls(game)}
             </div>
         );
     }
 
     renderHostControls(game) {
         if (this.isHost(game)) {
-            return [
+            return <div className="host-controls">
+                <h3>Host Controls</h3>
                 <p>
                     Vote type:
                     {Object.keys(VOTE_TYPES).map(voteType => (
@@ -214,16 +215,16 @@ export default class PlayerUi extends Component {
                             {voteType}
                         </button>
                     ))}
-                </p>,
+                </p>
                 <p>
                     <button
                         className={"btn btn-danger"}
                         onClick={() => this.reveal()}
                     >
-                        Reveal Now
+                        Reveal Votes Now
                     </button>
                 </p>
-            ];
+            </div>;
         }
     }
 

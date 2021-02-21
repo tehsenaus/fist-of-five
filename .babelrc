@@ -1,19 +1,33 @@
 {
     "sourceMaps": true,
     "presets": [
-        ["env", {
-            "targets": {
-                "browsers": ["last 2 Android versions", "last 2 iOS versions"],
-                "node": "8"
-            },
-            "exclude": ["transform-async-to-generator", "transform-regenerator"],
-            "debug": false
-        }]
+        [
+            "@babel/preset-env",
+            {
+                "targets": {
+                    "browsers": [
+                        "last 2 Android versions",
+                        "last 2 iOS versions"
+                    ],
+                    "node": "8"
+                },
+                "exclude": [
+                    "transform-async-to-generator",
+                    "transform-regenerator"
+                ],
+                "debug": false
+            }
+        ]
     ],
     "plugins": [
-        "fast-async",
-        "transform-object-rest-spread",
-        "transform-class-properties",
-        ["transform-react-jsx", { "pragma":"h" }]
+        // "module:fast-async",
+        "@babel/plugin-proposal-object-rest-spread",
+        "@babel/plugin-proposal-class-properties",
+        [
+            "@babel/plugin-transform-react-jsx",
+            {
+                "pragma": "h"
+            }
+        ]
     ]
 }

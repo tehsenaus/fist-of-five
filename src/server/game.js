@@ -2,16 +2,14 @@
 import { sendUpdate, delay, either, getInput } from './loop';
 import {call} from 'redux-saga/effects';
 import {countdown} from './utils';
-import {RESET_INPUT, VOTE_REVEAL_PHASE, ROUND_END_PHASE, GAME_END_PHASE, LOBBY_PHASE, ADD_PLAYER_INPUT, VOTE_INPUT} from '../common/constants';
-const shuffle = require('shuffle-array');
+import {RESET_INPUT, VOTE_REVEAL_PHASE, ROUND_END_PHASE, GAME_END_PHASE, START_VOTE_INPUT, VOTING_PHASE, ADD_PLAYER_INPUT, VOTE_INPUT} from '../common/constants';
 const _ = require('lodash');
 
-const GAME_EXPIRY_MS = 5 * 60000;
+const GAME_EXPIRY_MS = 30 * 60000;
 const GAME_END_EXPIRY_MS = 120000;
-const INPUT_PASSWORDS_TIMEOUT_MS = 30000;
 const PHASE_DELAY = 5000;
 
-export function* lobby() {
+export function* runVoting({ voteType = 'fistOfFive' } = {}) {
     let players = {};
     let playerVotes = {};
 
@@ -19,7 +17,8 @@ export function* lobby() {
     while (!expired) {
       yield sendUpdate({
         players: players,
-        phase: LOBBY_PHASE,
+        phase: VOTING_PHASE,
+        voteType,
         playerVotes,
         playersWhoVoted: Object.keys(playerVotes),
       });
@@ -27,6 +26,7 @@ export function* lobby() {
       yield either(
           call(getPlayer),
           call(getVote),
+          call(setVoteType),
           call(function *() {
             yield* countdown(GAME_EXPIRY_MS);
             expired = true;
@@ -70,6 +70,12 @@ export function* lobby() {
       };
     }
 
+    function* setVoteType() {
+      const { data: { voteType: newVoteType } } = yield getInput(START_VOTE_INPUT);
+      voteType = newVoteType;
+      playerVotes = {};
+    }
+
     function areAllVotesIn() {
       return Object.keys(playerVotes).length == Object.keys(players).length
     }
@@ -79,7 +85,7 @@ export function* lobby() {
 export function* runGame() {
   let expired = false;
   while (!expired) {
-    let game = yield* lobby();
+    let game = yield* runVoting();
     
     if (game.expired) {
       console.log('GAME EXPIRED');

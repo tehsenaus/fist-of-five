@@ -1,17 +1,16 @@
 
-export const CODE_NAMES = '😀 😁 😂 🤣 😃 😄 😅 😆 😉 😊 😋 😎 😍 😘 😗 😙 😚 🙂 🤗 🤔 😐 😑 😶 🙄 😏 😣 😥 😮 🤐 😯 😪 😫 😴 😌 😛 😜 😝 🤤 😒 😓 😔 😕 🙃 🤑 😲 ☹️ 🙁 😖 😞 😟 😤 😢 😭 😦 😧 😨 😩 😬 😰 😱 😳 😵 😡 😠 😷 🤒 🤕 🤢 🤧 😇 🤠 🤡 🤥 🤓 😈 👿 👹 👺 💀 👻 👽 🤖 💩 😺 😸 😹 😻 😼 😽 🙀 😿 😾'.split(' ');
-
-export const GAME_TITLE = [5,3,9].map(i => CODE_NAMES[i]).join('') +
-    ' CODEFACES ' + [8, 2, 5].map(i => CODE_NAMES[i]).join('')
-
-export const VOTES = [0, 1, 2, 3, 4, 5];
-
-export const HOST_ID = 'HOST';
+export const VOTE_TYPES = {
+    fistOfFive: [0, 1, 2, 3, 4, 5],
+    fibonacci: [0, 1, 2, 3, 5, 8, 13],
+    upDown: [-1, 0, 1],
+};
 
 /**
  * Phase when players are signing up, entering their real names.
  */
 export const LOBBY_PHASE = 'lobby';
+
+export const VOTING_PHASE = 'voting';
 
 /**
  * Once all players have voted, votes are revealed.
@@ -27,6 +26,11 @@ export const GAME_END_PHASE = 'gameEnd';
  * New player joins.
  */
 export const ADD_PLAYER_INPUT = 'addPlayer';
+
+/**
+ * Start voting
+ */
+ export const START_VOTE_INPUT = 'startVote';
 
 /**
  * Player adds vote.

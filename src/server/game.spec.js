@@ -1,52 +1,58 @@
 
-import {lobby} from './game';
+import {runVoting} from './game';
+import { expectSaga } from 'redux-saga-test-plan';
+import { ADD_PLAYER_INPUT, VOTE_INPUT, VOTE_REVEAL_PHASE, VOTING_PHASE } from '../common/constants';
 
 describe('game', () => {
-    describe('lobby', () => {
-        it('sets phase to lobby, and waits', function () {
-            
-            const g = lobby({});
+    describe('runVoting', () => {
+        it('sets phase to voting, and waits', function () {
+            return expectSaga(runVoting)
+                .put.like({ action: {
+                    phase: VOTING_PHASE,
+                    players: {},
+                }})
+                .take(ADD_PLAYER_INPUT)
+                .run();
+        });
 
-            const lobbyUpdate = g.next().value
-            expect( lobbyUpdate ).toMatchObject({
-                type: 'update',
-                state: { phase: 'lobby' }
-            });
-
-            const either = g.next(lobbyUpdate.state).value;
-            expect( either ).toMatchObject({
-                type: 'either',
-                options: [
-                    { type: 'call' },
-                    { type: 'delay' }
-                ]
-            });
-
-            // Inner loop to add players
-            const innerG = either.options[0].fn();
-            const addPlayerInput = innerG.next().value;
-            expect( addPlayerInput ).toMatchObject({
-                type: 'getInput',
-                inputType: 'addPlayer'
-            });
-
-            innerG.next({
-                clientId: 'testId',
-                data: {
-                    name: 'Momo'
-                }
-            });
-
-            expect( g.next().value ).toMatchObject({
-                type: 'update',
-                state: {
-                    phase: 'lobby',
+        it('sends results when all players have voted', function () {
+            return expectSaga(runVoting)
+                .dispatch({
+                    type: ADD_PLAYER_INPUT,
+                    clientId: 'a',
+                    data: { name: 'A' },
+                })
+                .dispatch({
+                    type: ADD_PLAYER_INPUT,
+                    clientId: 'b',
+                    data: { name: 'B' },
+                })
+                .put.like({ action: {
+                    phase: VOTING_PHASE,
                     players: {
-                        testId: { name: 'Momo' }
+                        a: { name: 'A' },
+                        b: { name: 'B' }
                     },
-                }
-            });
-        })
+                }})
+                .dispatch({
+                    type: VOTE_INPUT,
+                    clientId: 'a',
+                    data: { vote: 'A' },
+                })
+                .dispatch({
+                    type: VOTE_INPUT,
+                    clientId: 'b',
+                    data: { vote: 'B' },
+                })
+                .put.like({ action: {
+                    phase: VOTE_REVEAL_PHASE,
+                    playerVotes: {
+                        a: { vote: 'A' },
+                        b: { vote: 'B' }
+                    },
+                }})
+                .run();
+        });
     })
 });
 

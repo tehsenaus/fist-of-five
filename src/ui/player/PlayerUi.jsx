@@ -1,6 +1,6 @@
 import { h, Component } from 'preact';
 import guid from '../../common/guid'
-import { LOBBY_PHASE, YOUR_CODENAME_PHASE, VOTE_REVEAL_PHASE, VOTES } from "../../common/constants";
+import { VOTING_PHASE, VOTE_REVEAL_PHASE, VOTE_TYPES } from "../../common/constants";
 
 function sortBy(arr, f) {
     return arr.slice(0).sort(function (a, b) {
@@ -86,6 +86,8 @@ export default class PlayerUi extends Component {
                     return;
                 };
 
+                console.log('stateUpdate', json);
+
                 this.setState({
                     ...this.state,
                     ...json,
@@ -110,7 +112,7 @@ export default class PlayerUi extends Component {
 
     onInputAccepted(e) {
         const gameId = this.state.gameId;
-        if (this.state.game.phase === LOBBY_PHASE) {
+        if (this.state.game.phase === VOTING_PHASE) {
             const username = this.input.value;
             fetch("/player?id=" + this.state.userHash + '&gameId=' + gameId + "&name=" + encodeURIComponent(username), { method: "POST" })
         }
@@ -119,6 +121,11 @@ export default class PlayerUi extends Component {
     vote(voteValue) {
         const gameId = this.state.gameId;
         fetch("/vote?playerId=" + this.state.userHash + '&gameId=' + gameId + "&vote=" + voteValue, { method: "POST" })
+    }
+
+    setVoteType(voteType) {
+        const gameId = this.state.gameId;
+        fetch("/game/start?playerId=" + this.state.userHash + '&gameId=' + gameId + "&voteType=" + voteType, { method: "POST" })
     }
 
     render() {
@@ -148,7 +155,7 @@ export default class PlayerUi extends Component {
         if (!this.state.game) {
             return this.renderCreateOrJoinGame();
         }
-        if (this.state.game.phase === LOBBY_PHASE) {
+        if (this.state.game.phase === VOTING_PHASE) {
             return this.renderLobby(this.state.game);
         }
         if (this.state.game.phase === VOTE_REVEAL_PHASE) {
@@ -161,6 +168,7 @@ export default class PlayerUi extends Component {
             return this.renderNameEntry(game);
         }
 
+        const validVotes = VOTE_TYPES[game.voteType];
         const {vote} = game.myVote || {};
 
         return (
@@ -169,15 +177,17 @@ export default class PlayerUi extends Component {
 
                 <p>
                     Your Vote:<br />
-                    {VOTES.map(voteValue => (
+                    {validVotes.map(voteValue => (
                         <button
-                            className={"btn btn-lg " + (vote ===     voteValue ? "btn-primary" : "btn-secondary")}
+                            className={"btn btn-lg " + (vote === voteValue ? "btn-primary" : "btn-secondary")}
                             onClick={() => this.vote(voteValue)}
                         >
                             {voteValue}
                         </button>
                     ))}
                 </p>
+
+                {this.renderHostControls(game)}
 
                 <p>{game.players.length} voter(s) joined:</p>
 
@@ -187,6 +197,24 @@ export default class PlayerUi extends Component {
                 <p>Shareable URL (expires in {this.state.game.countdownTimeSecs}): <pre>{window.location.href}</pre></p>
             </div>
         );
+    }
+
+    renderHostControls(game) {
+        if (this.isHost(game)) {
+            return (
+                <p>
+                    Vote type:
+                    {Object.keys(VOTE_TYPES).map(voteType => (
+                        <button
+                            className={"btn " + (voteType === game.voteType ? "btn-primary" : "btn-secondary")}
+                            onClick={() => this.setVoteType(voteType)}
+                        >
+                            {voteType}
+                        </button>
+                    ))}
+                </p>
+            )
+        }
     }
 
     renderNameEntry(game) {
@@ -293,5 +321,9 @@ export default class PlayerUi extends Component {
                 <h1 style={{ fontSize: '5em' }}>{countdownTimeSecs} </h1>
             </div>
         )
+    }
+
+    isHost(game) {
+        return game.playerId === game.hostId;
     }
 }

@@ -5,7 +5,7 @@ import express from 'express';
 import {runGameLoop} from './loop';
 import {runGame} from './game';
 import webpackConfig from '../../webpack.config.js';
-import {HOST_ID, ADD_PLAYER_INPUT, START_GAME_INPUT, VOTE_INPUT, VOTES, VOTE_REVEAL_PHASE, RESET_INPUT} from '../common/constants';
+import {ADD_PLAYER_INPUT, VOTE_INPUT, VOTE_TYPES, VOTE_REVEAL_PHASE, RESET_INPUT, START_VOTE_INPUT} from '../common/constants';
 import {get} from "lodash";
 import {randomPin} from "./utils";
 
@@ -32,13 +32,9 @@ function createGame(clientId) {
         id = randomPin(6);
     } while (games[id]);
 
-    const {
-        sendInput,
-        getStateUpdate,
-        promise
-    } = runGameLoop(runGame());
+    const gameProps = runGameLoop(runGame());
     
-    promise.catch(e => {
+    gameProps.promise.catch(e => {
         console.error('ERROR IN GAME:', id, e);
     }).then(() => {
         console.log('game done:', id);
@@ -46,11 +42,9 @@ function createGame(clientId) {
     });
 
     const game = games[id] = {
+        ...gameProps,
         id,
-        sendInput,
-        getStateUpdate,
-        promise,
-        hostId: clientId
+        hostId: clientId,
     };
 
     return game;
@@ -68,14 +62,6 @@ app.get('/state', async (req, res) => {
 
     const clientId = req.query.id;
     res.json(await game.getStateUpdate(req.query.id, req.query.seq, latestGameState => {
-        const isHost = clientId === HOST_ID;
-
-        if (isHost) {
-            return latestGameState;
-        }
-
-        const players = latestGameState.round && latestGameState.round.players || {};
-        const player = players[clientId] || {};
         return {
             hostId: game.hostId,
             phase : latestGameState.phase,
@@ -85,6 +71,7 @@ app.get('/state', async (req, res) => {
             myVote: latestGameState.playerVotes[clientId],
             playerVotes: latestGameState.phase === VOTE_REVEAL_PHASE ? latestGameState.playerVotes : {},
             playersWhoVoted: latestGameState.playersWhoVoted,
+            voteType: latestGameState.voteType,
         }
     }));
 });
@@ -113,8 +100,10 @@ app.post('/vote', async (req, res) => {
 
     const clientId = req.query.playerId;
     const vote = parseInt(req.query.vote);
+    const {voteType} = game.getLatestState();
+    const validVotes = VOTE_TYPES[voteType];
 
-    if (VOTES.indexOf(vote) < 0) return res.status(400).end();
+    if (validVotes.indexOf(vote) < 0) return res.status(400).end();
 
     game.sendInput(clientId, VOTE_INPUT, {
         vote,
@@ -142,8 +131,10 @@ app.post('/game/start', (req, res) => {
     const game = getGame(req.query.gameId);
     if (!game) return res.status(400).end();
 
-    if ( req.query.id === game.hostId ) {
-        game.sendInput(req.query.id, START_GAME_INPUT, {});
+    if ( req.query.playerId === game.hostId ) {
+        game.sendInput(req.query.id, START_VOTE_INPUT, {
+            voteType: req.query.voteType,
+        });
     }
     res.end();
 });

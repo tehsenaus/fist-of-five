@@ -40,6 +40,7 @@ export function runGameLoop(gameSaga) {
             channel.put(input);
         },
         getStateUpdate,
+        getLatestState: () => latestGameState,
         promise,
     }
 

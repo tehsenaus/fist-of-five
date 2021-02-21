@@ -14,6 +14,8 @@ export function* runVoting({ voteType = 'fistOfFive' } = {}) {
     let playerVotes = {};
 
     let expired = false;
+    let revealed = false;
+
     while (!expired) {
       yield sendUpdate({
         players: players,
@@ -27,13 +29,14 @@ export function* runVoting({ voteType = 'fistOfFive' } = {}) {
           call(getPlayer),
           call(getVote),
           call(setVoteType),
+          call(getReveal),
           call(function *() {
             yield* countdown(GAME_EXPIRY_MS);
             expired = true;
           })
       );  
 
-      if (!expired && areAllVotesIn()) {
+      if (!expired && (revealed || areAllVotesIn())) {
         yield sendUpdate({
           playerVotes,
           phase: VOTE_REVEAL_PHASE,
@@ -44,6 +47,7 @@ export function* runVoting({ voteType = 'fistOfFive' } = {}) {
         );
 
         playerVotes = {};
+        revealed = false;
       }
     }
     return yield sendUpdate({ expired, players });
@@ -74,6 +78,11 @@ export function* runVoting({ voteType = 'fistOfFive' } = {}) {
       const { data: { voteType: newVoteType } } = yield getInput(START_VOTE_INPUT);
       voteType = newVoteType;
       playerVotes = {};
+    }
+
+    function* getReveal() {
+      yield getInput(RESET_INPUT);
+      revealed = true;
     }
 
     function areAllVotesIn() {

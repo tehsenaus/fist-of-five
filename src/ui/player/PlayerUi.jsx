@@ -119,13 +119,15 @@ export default class PlayerUi extends Component {
     };
 
     vote(voteValue) {
-        const gameId = this.state.gameId;
-        fetch("/vote?playerId=" + this.state.userHash + '&gameId=' + gameId + "&vote=" + voteValue, { method: "POST" })
+        fetch(this.buildUrl("/vote", { vote: voteValue }), { method: "POST" });
     }
 
     setVoteType(voteType) {
-        const gameId = this.state.gameId;
-        fetch("/game/start?playerId=" + this.state.userHash + '&gameId=' + gameId + "&voteType=" + voteType, { method: "POST" })
+        fetch(this.buildUrl("/game/start", { voteType }), { method: "POST" });
+    }
+
+    reveal() {
+        this.resetGame();
     }
 
     render() {
@@ -139,18 +141,6 @@ export default class PlayerUi extends Component {
         </div>
     }
 
-    renderCreateOrJoinGame() {
-        return <div className="text-center">
-            <h1 className={"text--screen-title text-uppercase"}>FIST OF FIVE VOTING</h1>
-
-            <p>
-                <button className="btn btn-primary" onClick={(e) => this.onCreateGame()}>
-                    Start Session
-                </button>
-            </p>
-        </div>
-    }
-
     renderMain() {
         if (!this.state.game) {
             return this.renderCreateOrJoinGame();
@@ -161,6 +151,18 @@ export default class PlayerUi extends Component {
         if (this.state.game.phase === VOTE_REVEAL_PHASE) {
             return this.renderRevealedVotes(this.state.game);
         }
+    }
+
+    renderCreateOrJoinGame() {
+        return <div className="text-center">
+            <h1 className={"text--screen-title text-uppercase"}>FIST OF FIVE VOTING</h1>
+
+            <p>
+                <button className="btn btn-primary" onClick={(e) => this.onCreateGame()}>
+                    Start Session
+                </button>
+            </p>
+        </div>
     }
 
     renderLobby(game) {
@@ -201,7 +203,7 @@ export default class PlayerUi extends Component {
 
     renderHostControls(game) {
         if (this.isHost(game)) {
-            return (
+            return [
                 <p>
                     Vote type:
                     {Object.keys(VOTE_TYPES).map(voteType => (
@@ -212,8 +214,16 @@ export default class PlayerUi extends Component {
                             {voteType}
                         </button>
                     ))}
+                </p>,
+                <p>
+                    <button
+                        className={"btn btn-danger"}
+                        onClick={() => this.reveal()}
+                    >
+                        Reveal Now
+                    </button>
                 </p>
-            )
+            ];
         }
     }
 
@@ -325,5 +335,15 @@ export default class PlayerUi extends Component {
 
     isHost(game) {
         return game.playerId === game.hostId;
+    }
+
+    buildUrl = (base, params) => {
+        params = {
+            ...params,
+            playerId: this.state.userHash,
+            gameId: this.state.gameId,
+        };
+        const paramsStr = Object.keys(params).map(key => key + '=' + params[key]).join('&');
+        return base + "?" + paramsStr;
     }
 }

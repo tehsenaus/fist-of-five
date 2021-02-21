@@ -1,5 +1,5 @@
 
-import {runSaga} from "redux-saga";
+import {runSaga, stdChannel} from "redux-saga";
 import {take, put, race, call, select} from "redux-saga/effects";
 
 export function runGameLoop(gameSaga) {
@@ -7,7 +7,6 @@ export function runGameLoop(gameSaga) {
     let seqNo = 0;
     let nextStatePromise = Promise.resolve({});
     let _sendUpdate;
-    let inputListeners = [];
 
     (function loop() {
         nextStatePromise = new Promise(resolve => {
@@ -21,13 +20,10 @@ export function runGameLoop(gameSaga) {
         }).then(loop);
     })();
 
+    const channel = stdChannel();
+
     const task = runSaga({
-        subscribe: callback => {
-            inputListeners.push(callback);
-            return () => {
-                inputListeners = inputListeners.filter(listener => listener !== callback);
-            };
-        },
+        channel,
         dispatch: update => {
             _sendUpdate(update);
         },
@@ -35,13 +31,13 @@ export function runGameLoop(gameSaga) {
         logger: (...args) => console.log(...args),
     }, () => gameSaga);
 
-    const promise = task.done;
+    const promise = task.toPromise();
 
     return {
         sendInput: (clientId, type, data) => {
             console.log('sendInput', clientId, type, data);
             const input = { type, clientId, data };
-            inputListeners.forEach(listener => listener(input));
+            channel.put(input);
         },
         getStateUpdate,
         promise,

@@ -239,14 +239,15 @@ export default class PlayerUi extends Component {
                         placeholder={"Your name"}
                         maxLength={16}
                         ref={(input) => { this.input = input; }}
-                        onKeyPress={(e) => this.onInputKeyDown(e)}>
+                        onKeyPress={(e) => this.onInputKeyDown(e)}
+                        autoFocus>
                     </input>
                 </div>
 
                 <p>
                     <button className="btn btn-primary" onClick={(e) => this.onInputAccepted()}>
-                        Send
-                        </button>
+                        Join
+                    </button>
                 </p>
 
                 <p>
@@ -266,10 +267,20 @@ export default class PlayerUi extends Component {
             playersByPlayerId[player.playerId] = player;
         }
 
+        let vote_counts = {};
+        let max_vote_count = 0;
+        let mode = 0;
         for (const playerId of Object.keys(playerVotes)) {
             const vote = playerVotes[playerId].vote;
             total += vote;
             votes.push({ player: playersByPlayerId[playerId].name, vote });
+
+            // Find the mode of the votes
+            vote_counts[vote] = (vote_counts[vote] || 0) + 1;
+            if (vote_counts[vote] > max_vote_count) {
+                max_vote_count = vote_counts[vote];
+                mode = vote;
+            }
         }
         const avg = total / Object.keys(playerVotes).length;
         const sortedVotes = sortBy(votes, vote => vote.vote);
@@ -279,7 +290,7 @@ export default class PlayerUi extends Component {
 
             <p>
                 {sortedVotes.map(({vote}) => vote).join(", ")}<br />
-                Mean: {avg.toFixed(1)}
+                Mean: {avg.toFixed(1)}; Mode: {mode};
             </p>
 
             <p>

@@ -278,8 +278,8 @@ export default class PlayerUi extends Component {
             // Find the mode of the votes
             vote_counts[vote] = (vote_counts[vote] || 0) + 1;
             if (vote_counts[vote] > max_vote_count) {
-                max_vote_count = value;
-                mode = key;
+                max_vote_count = vote_counts[vote];
+                mode = vote;
             }
         }
         const avg = total / Object.keys(playerVotes).length;

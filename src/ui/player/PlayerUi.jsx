@@ -266,12 +266,15 @@ export default class PlayerUi extends Component {
             playersByPlayerId[player.playerId] = player;
         }
 
+        var vote_counts = {};
         for (const playerId of Object.keys(playerVotes)) {
             const vote = playerVotes[playerId].vote;
+            vote_counts[vote] = (vote_counts[vote] || 0) + 1;
             total += vote;
             votes.push({ player: playersByPlayerId[playerId].name, vote });
         }
         const avg = total / Object.keys(playerVotes).length;
+        const mode = Math.max.apply(null, Object.values(vote_counts));
         const sortedVotes = sortBy(votes, vote => vote.vote);
 
         return <div className="ui__lobby">
@@ -279,7 +282,7 @@ export default class PlayerUi extends Component {
 
             <p>
                 {sortedVotes.map(({vote}) => vote).join(", ")}<br />
-                Mean: {avg.toFixed(1)}
+                Mean: {avg.toFixed(1)}; Mode: {mode};
             </p>
 
             <p>

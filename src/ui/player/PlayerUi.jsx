@@ -283,7 +283,6 @@ export default class PlayerUi extends Component {
             }
         }
         const avg = total / Object.keys(playerVotes).length;
-
         const sortedVotes = sortBy(votes, vote => vote.vote);
 
         return <div className="ui__lobby">

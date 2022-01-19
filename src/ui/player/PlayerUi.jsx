@@ -239,14 +239,15 @@ export default class PlayerUi extends Component {
                         placeholder={"Your name"}
                         maxLength={16}
                         ref={(input) => { this.input = input; }}
-                        onKeyPress={(e) => this.onInputKeyDown(e)}>
+                        onKeyPress={(e) => this.onInputKeyDown(e)}
+                        autoFocus>
                     </input>
                 </div>
 
                 <p>
                     <button className="btn btn-primary" onClick={(e) => this.onInputAccepted()}>
-                        Send
-                        </button>
+                        Join
+                    </button>
                 </p>
 
                 <p>

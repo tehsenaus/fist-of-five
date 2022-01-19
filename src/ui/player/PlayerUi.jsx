@@ -267,15 +267,23 @@ export default class PlayerUi extends Component {
             playersByPlayerId[player.playerId] = player;
         }
 
-        var vote_counts = {};
+        let vote_counts = {};
+        let max_vote_count = 0;
+        let mode = 0;
         for (const playerId of Object.keys(playerVotes)) {
             const vote = playerVotes[playerId].vote;
-            vote_counts[vote] = (vote_counts[vote] || 0) + 1;
             total += vote;
             votes.push({ player: playersByPlayerId[playerId].name, vote });
+
+            // Find the mode of the votes
+            vote_counts[vote] = (vote_counts[vote] || 0) + 1;
+            if (vote_counts[vote] > max_vote_count) {
+                max_vote_count = value;
+                mode = key;
+            }
         }
         const avg = total / Object.keys(playerVotes).length;
-        const mode = Math.max.apply(null, Object.values(vote_counts));
+
         const sortedVotes = sortBy(votes, vote => vote.vote);
 
         return <div className="ui__lobby">
